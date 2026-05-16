@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Liberal</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: auto;
+      padding: 40px;
+      background: #111;
+      color: white;
+    }
+
+    button {
+      padding: 12px 20px;
+      margin-top: 20px;
+      background: #6c4cff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .question {
+      margin-top: 30px;
+    }
+
+    .answer {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background: #222;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .answer:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mapa Ideológico Liberal</h1>
+
+  <div id="quiz"></div>
+
+  <script>
+    const questions = [
+      {
+        question: "Uma economia ideal seria…",
+        answers: [
+          ["Livre mercado regulado com impostos progressivos.", "social"],
+          ["Laissez-faire com Estado mínimo.", "minarquista"],
+          ["Mercado livre com regulação limitada.", "conservador"]
+        ]
+      },
+      {
+        question: "Programas sociais…",
+        answers: [
+          ["Devem ser expandidos.", "social"],
+          ["Devem ser focalizados.", "conservador"],
+          ["Devem ser extintos.", "minarquista"]
+        ]
+      },
+      {
+        question: "Política de drogas",
+        answers: [
+          ["Descriminalização total.", "social"],
+          ["Sou contra a liberação.", "conservador"],
+          ["Legalização total.", "minarquista"]
+        ]
+      }
+    ];
+
+    const scores = {
+      social: 0,
+      conservador: 0,
+      minarquista: 0
+    };
+
+    const quiz = document.getElementById("quiz");
+
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.classList.add("question");
+
+      div.innerHTML = `<h2>${index + 1}. ${q.question}</h2>`;
+
+      q.answers.forEach(answer => {
+        const btn = document.createElement("button");
+        btn.classList.add("answer");
+        btn.innerText = answer[0];
+
+        btn.onclick = () => {
+          scores[answer[1]]++;
+          btn.disabled = true;
+        };
+
+        div.appendChild(btn);
+      });
+
+      quiz.appendChild(div);
+    });
+
+    const finish = document.createElement("button");
+    finish.innerText = "Ver Resultado";
+
+    finish.onclick = () => {
+      const result = Object.keys(scores).reduce((a, b) =>
+        scores[a] > scores[b] ? a : b
+      );
+
+      let text = "";
+
+      if (result === "social") {
+        text = "Social / Cosmopolita / Igualitário";
+      }
+
+      if (result === "conservador") {
+        text = "Conservador / Clássico / Chicago";
+      }
+
+      if (result === "minarquista") {
+        text = "Minarquista / Libertarian";
+      }
+
+      alert("Seu resultado é: " + text);
+    };
+
+    quiz.appendChild(finish);
+  </script>
+
+</body>
+</html>
