@@ -1,140 +1,166 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mapa Liberal</title>
+// Quiz Ideológico Liberal
+// Feito para rodar no navegador ou GitHub Pages
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: auto;
-      padding: 40px;
-      background: #111;
-      color: white;
-    }
-
-    button {
-      padding: 12px 20px;
-      margin-top: 20px;
-      background: #6c4cff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    .question {
-      margin-top: 30px;
-    }
-
-    .answer {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
-      background: #222;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .answer:hover {
-      background: #333;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>Mapa Ideológico Liberal</h1>
-
-  <div id="quiz"></div>
-
-  <script>
-    const questions = [
+const questions = [
+  {
+    question: "Uma economia ideal seria…",
+    answers: [
       {
-        question: "Uma economia ideal seria…",
-        answers: [
-          ["Livre mercado regulado com impostos progressivos.", "social"],
-          ["Laissez-faire com Estado mínimo.", "minarquista"],
-          ["Mercado livre com regulação limitada.", "conservador"]
-        ]
+        text: "Livre mercado regulado, com impostos progressivos e agências que combatam falhas de mercado e desigualdades.",
+        type: "social"
       },
       {
-        question: "Programas sociais…",
-        answers: [
-          ["Devem ser expandidos.", "social"],
-          ["Devem ser focalizados.", "conservador"],
-          ["Devem ser extintos.", "minarquista"]
-        ]
+        text: "Laissez-faire, com o Estado assegurando apenas os contratos e os direitos de propriedade.",
+        type: "minarquista"
       },
       {
-        question: "Política de drogas",
-        answers: [
-          ["Descriminalização total.", "social"],
-          ["Sou contra a liberação.", "conservador"],
-          ["Legalização total.", "minarquista"]
-        ]
+        text: "Mercado livre com regulação limitada e foco em estabilidade econômica.",
+        type: "conservador"
       }
-    ];
-
-    const scores = {
-      social: 0,
-      conservador: 0,
-      minarquista: 0
-    };
-
-    const quiz = document.getElementById("quiz");
-
-    questions.forEach((q, index) => {
-      const div = document.createElement("div");
-      div.classList.add("question");
-
-      div.innerHTML = `<h2>${index + 1}. ${q.question}</h2>`;
-
-      q.answers.forEach(answer => {
-        const btn = document.createElement("button");
-        btn.classList.add("answer");
-        btn.innerText = answer[0];
-
-        btn.onclick = () => {
-          scores[answer[1]]++;
-          btn.disabled = true;
-        };
-
-        div.appendChild(btn);
-      });
-
-      quiz.appendChild(div);
-    });
-
-    const finish = document.createElement("button");
-    finish.innerText = "Ver Resultado";
-
-    finish.onclick = () => {
-      const result = Object.keys(scores).reduce((a, b) =>
-        scores[a] > scores[b] ? a : b
-      );
-
-      let text = "";
-
-      if (result === "social") {
-        text = "Social / Cosmopolita / Igualitário";
+    ]
+  },
+  {
+    question: "Sobre direitos sociais e rede de proteção social",
+    answers: [
+      {
+        text: "Os programas sociais devem ser expandidos, com um Estado de bem-estar robusto.",
+        type: "social"
+      },
+      {
+        text: "Os programas sociais devem ser focalizados, garantindo um piso mínimo.",
+        type: "conservador"
+      },
+      {
+        text: "Os programas sociais devem ser extintos, ficando a cargo da iniciativa privada.",
+        type: "minarquista"
       }
-
-      if (result === "conservador") {
-        text = "Conservador / Clássico / Chicago";
+    ]
+  },
+  {
+    question: "Justiça e Igualdade",
+    answers: [
+      {
+        text: "O Estado deve garantir oportunidades mais justas para todos.",
+        type: "social"
+      },
+      {
+        text: "Igualdade perante a lei é suficiente; o foco deve ser eficiência.",
+        type: "conservador"
+      },
+      {
+        text: "O Estado não deve buscar justiça social nem igualdade.",
+        type: "minarquista"
       }
-
-      if (result === "minarquista") {
-        text = "Minarquista / Libertarian";
+    ]
+  },
+  {
+    question: "Relações Internacionais",
+    answers: [
+      {
+        text: "Fronteiras abertas e cooperação global são essenciais.",
+        type: "social"
+      },
+      {
+        text: "O livre comércio importa, mas costumes nacionais vêm primeiro.",
+        type: "conservador"
+      },
+      {
+        text: "Livre circulação de pessoas e mercadorias sem interferência estatal.",
+        type: "minarquista"
       }
+    ]
+  },
+  {
+    question: "Aborto",
+    answers: [
+      {
+        text: "Deve ser legalizado e garantido pelo Estado.",
+        type: "social"
+      },
+      {
+        text: "Apenas nos casos previstos na legislação atual.",
+        type: "conservador"
+      },
+      {
+        text: "O Estado não deve interferir na decisão individual.",
+        type: "minarquista"
+      }
+    ]
+  },
+  {
+    question: "Política de drogas",
+    answers: [
+      {
+        text: "Descriminalização total com foco em saúde pública.",
+        type: "social"
+      },
+      {
+        text: "Sou contra a liberação; drogas destroem a ordem social.",
+        type: "conservador"
+      },
+      {
+        text: "Legalização total; cada indivíduo é dono do próprio corpo.",
+        type: "minarquista"
+      }
+    ]
+  }
+];
 
-      alert("Seu resultado é: " + text);
-    };
+const scores = {
+  social: 0,
+  conservador: 0,
+  minarquista: 0
+};
 
-    quiz.appendChild(finish);
-  </script>
+function startQuiz() {
+  questions.forEach((q, index) => {
+    let options = q.answers.map((a, i) => {
+      return `${i + 1}. ${a.text}`;
+    }).join("\n");
 
-</body>
-</html>
+    let answer = prompt(
+      `${index + 1}. ${q.question}\n\n${options}\n\nDigite o número da resposta:`
+    );
+
+    const selected = q.answers[parseInt(answer) - 1];
+
+    if (selected) {
+      scores[selected.type]++;
+    }
+  });
+
+  showResult();
+}
+
+function showResult() {
+  const result = Object.keys(scores).reduce((a, b) =>
+    scores[a] > scores[b] ? a : b
+  );
+
+  let title = "";
+  let description = "";
+
+  switch (result) {
+    case "social":
+      title = "Social / Cosmopolita / Igualitário";
+      description =
+        "Você tende ao liberalismo progressista, valorizando direitos individuais, inclusão social e cooperação global.";
+      break;
+
+    case "conservador":
+      title = "Conservador / Clássico / Chicago";
+      description =
+        "Você tende ao liberalismo clássico/conservador, priorizando estabilidade, mercado e preservação institucional.";
+      break;
+
+    case "minarquista":
+      title = "Minarquista / Libertarian";
+      description =
+        "Você tende ao libertarianismo, defendendo liberdade individual máxima e mínima intervenção estatal.";
+      break;
+  }
+
+  alert(`Resultado:\n\n${title}\n\n${description}`);
+}
+
+startQuiz();
