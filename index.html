@@ -1,376 +1,825 @@
-import os
-
-html_content = """
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Mapa Ideológico Liberal</title>
+<title>Quiz Liberal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
+  :root {
+    --purple: #640b9b;
+    --teal: #00b99f;
+    --light: #efefef;
+    --black: #000000;
+    --white: #ffffff;
+    --purple-dark: #4a0872;
+    --purple-light: #7d0ec0;
+    --teal-dark: #008f7b;
+  }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #640b9b;
+  *, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--light);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #222;
-}
+    padding: 24px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
 
-#quiz-container {
-    background: white;
-    width: 90%;
-    max-width: 850px;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-}
+  /* Geometric background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(100, 11, 155, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 90% 80%, rgba(0, 185, 159, 0.10) 0%, transparent 60%),
+      var(--light);
+    z-index: 0;
+    pointer-events: none;
+  }
 
-h1 {
-    text-align: center;
-    color: #640b9b;
-    margin-bottom: 25px;
-}
+  /* Decorative corner shapes */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -80px;
+    right: -80px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--teal) 100%);
+    opacity: 0.08;
+    z-index: 0;
+    pointer-events: none;
+  }
 
-.question {
-    font-size: 1.3em;
-    font-weight: bold;
-    margin-bottom: 25px;
-}
-
-.options {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-button {
-    padding: 15px;
-    border: 2px solid #640b9b;
-    background: white;
-    color: #640b9b;
-    border-radius: 12px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: 0.25s;
-    text-align: left;
-}
-
-button:hover {
-    background: #640b9b;
-    color: white;
-    transform: translateY(-2px);
-}
-
-.progress-bar {
+  #quiz-container {
+    background: var(--white);
     width: 100%;
-    height: 12px;
-    background: #ddd;
-    border-radius: 10px;
+    max-width: 780px;
+    border-radius: 24px;
+    box-shadow:
+      0 2px 0 rgba(100,11,155,0.15),
+      0 8px 32px rgba(0,0,0,0.10),
+      0 32px 64px rgba(100,11,155,0.08);
     overflow: hidden;
-    margin-bottom: 30px;
-}
+    position: relative;
+    z-index: 1;
+    border: 1.5px solid rgba(100,11,155,0.10);
+  }
 
-#progress {
+  /* Header bar */
+  .quiz-header {
+    background: var(--purple);
+    padding: 28px 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quiz-header::before {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    right: -30px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(0, 185, 159, 0.25);
+  }
+
+  .quiz-header::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 60%;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .quiz-header h1 {
+    color: var(--white);
+    font-size: 1.4em;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  .quiz-header h1 span {
+    color: var(--teal);
+  }
+
+  .quiz-header p {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.88em;
+    font-weight: 400;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    padding: 20px 40px 0;
+    background: var(--white);
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .progress-count {
+    font-size: 0.78em;
+    font-weight: 500;
+    color: #aaa;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--light);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  #progress {
     height: 100%;
     width: 0%;
-    background: #640b9b;
-    transition: width 0.3s;
-}
+    background: linear-gradient(90deg, var(--purple) 0%, var(--teal) 100%);
+    border-radius: 99px;
+    transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
 
-#result {
-    display: none;
-    text-align: center;
-}
+  /* Quiz body */
+  #quiz-body {
+    padding: 28px 40px 36px;
+  }
 
-.result-title {
-    font-size: 2em;
-    color: #640b9b;
-    margin-top: 15px;
-    font-weight: bold;
-}
+  .question-number {
+    display: inline-block;
+    background: var(--light);
+    color: var(--purple);
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(100,11,155,0.12);
+  }
 
-.result-desc {
-    margin-top: 18px;
-    line-height: 1.7;
-    font-size: 1.1em;
-}
+  .question {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.45;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+  }
 
-.result-image {
-    width: 240px;
-    height: 240px;
-    object-fit: cover;
-    border-radius: 18px;
-    margin-top: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-.restart-btn {
-    margin-top: 30px;
-    padding: 14px 22px;
-    border: none;
-    background: #640b9b;
-    color: white;
-    border-radius: 10px;
-    font-size: 1em;
+  .option-btn {
+    padding: 15px 20px;
+    border: 1.5px solid #e0e0e0;
+    background: var(--white);
+    color: var(--black);
+    border-radius: 14px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.97em;
+    font-weight: 500;
     cursor: pointer;
-}
-
-.restart-btn:hover {
-    opacity: 0.9;
-}
-
-.score-box {
-    margin-top: 25px;
     text-align: left;
-    background: #f5f5f5;
-    padding: 20px;
-    border-radius: 12px;
-}
+    line-height: 1.4;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    overflow: hidden;
+  }
 
-.score-item {
-    margin: 10px 0;
-    font-weight: bold;
-}
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--purple), var(--teal));
+    border-radius: 99px 0 0 99px;
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
+  }
 
+  .option-btn:hover {
+    border-color: var(--purple);
+    background: rgba(100,11,155,0.04);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(100,11,155,0.10);
+  }
+
+  .option-btn:hover::before {
+    transform: scaleY(1);
+  }
+
+  .option-btn:active {
+    transform: translateX(4px) scale(0.99);
+  }
+
+  /* Score badges inline */
+  .score-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px dashed #e8e8e8;
+  }
+
+  .score-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72em;
+    font-weight: 600;
+    color: #888;
+    background: var(--light);
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+  }
+
+  .score-chip.active {
+    color: var(--purple);
+    background: rgba(100,11,155,0.07);
+    border-color: rgba(100,11,155,0.25);
+  }
+
+  .score-chip .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    display: none;
+  }
+
+  .score-chip.active .dot {
+    display: block;
+  }
+
+  /* Result screen */
+  #result {
+    display: none;
+    padding: 36px 40px;
+    text-align: center;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    color: white;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 20px;
+  }
+
+  .result-image-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  .result-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--white);
+    box-shadow:
+      0 0 0 3px var(--teal),
+      0 12px 32px rgba(0,0,0,0.18);
+    display: block;
+  }
+
+  .result-title {
+    font-size: 2em;
+    font-weight: 900;
+    color: var(--purple);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .result-subtitle {
+    font-size: 0.88em;
+    font-weight: 600;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }
+
+  .result-desc {
+    max-width: 480px;
+    margin: 0 auto 28px;
+    font-size: 1em;
+    font-weight: 400;
+    color: #444;
+    line-height: 1.7;
+  }
+
+  /* Score breakdown */
+  .score-breakdown {
+    background: var(--light);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .score-breakdown h3 {
+    font-size: 0.78em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888;
+    margin-bottom: 14px;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+
+  .score-row:last-child { margin-bottom: 0; }
+
+  .score-row-label {
+    font-size: 0.82em;
+    font-weight: 600;
+    color: var(--black);
+    width: 130px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .score-row-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: #ddd;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .score-row-bar {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--purple), var(--teal));
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-row-num {
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--purple);
+    width: 24px;
+    text-align: right;
+  }
+
+  /* Tabs for result type */
+  .result-type-box {
+    background: var(--white);
+    border: 1.5px solid rgba(100,11,155,0.12);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .result-type-header {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
+
+  .result-type-title {
+    font-size: 1.05em;
+    font-weight: 800;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+
+  .result-type-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .result-type-list li {
+    font-size: 0.88em;
+    font-weight: 400;
+    color: #555;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.4;
+  }
+
+  .result-type-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .restart-btn {
+    background: var(--purple);
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 1em;
+    font-weight: 700;
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: -0.01em;
+    box-shadow: 0 4px 16px rgba(100,11,155,0.3);
+  }
+
+  .restart-btn:hover {
+    background: var(--purple-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(100,11,155,0.35);
+  }
+
+  /* Transitions */
+  #quiz-ui {
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @media (max-width: 600px) {
+    .quiz-header { padding: 22px 22px 20px; }
+    #quiz-body { padding: 22px 22px 28px; }
+    #result { padding: 28px 22px; }
+    .progress-wrap { padding: 16px 22px 0; }
+    .question { font-size: 1.05em; }
+    .quiz-header h1 { font-size: 1.2em; }
+    .result-title { font-size: 1.55em; }
+    .score-row-label { width: 100px; font-size: 0.78em; }
+  }
 </style>
-
 </head>
-
 <body>
 
 <div id="quiz-container">
 
-<div id="quiz-ui">
+  <!-- Header -->
+  <div class="quiz-header">
+    <h1>Qual tipo de <span>liberal</span> você é?</h1>
+    <p>Responda 10 perguntas e descubra sua tendência política</p>
+  </div>
 
-<h1>Mapa Ideológico Liberal</h1>
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span class="progress-label" id="progress-label">Questão 1 de 10</span>
+      <span class="progress-count" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div id="progress"></div>
+    </div>
+  </div>
 
-<div class="progress-bar">
-<div id="progress"></div>
-</div>
+  <!-- Quiz UI -->
+  <div id="quiz-ui">
+    <div id="quiz-body">
+      <div id="question-number" class="question-number">Questão 1</div>
+      <div id="question-text" class="question"></div>
+      <div id="options-container" class="options"></div>
 
-<div id="question-text" class="question"></div>
+      <!-- Live score chips -->
+      <div class="score-chips" id="score-chips">
+        <div class="score-chip" data-type="A" id="chip-A"><span class="dot"></span> Liberal Social <span id="count-A">0</span></div>
+        <div class="score-chip" data-type="B" id="chip-B"><span class="dot"></span> Neoliberal <span id="count-B">0</span></div>
+        <div class="score-chip" data-type="C" id="chip-C"><span class="dot"></span> Minarquista <span id="count-C">0</span></div>
+      </div>
+    </div>
+  </div>
 
-<div id="options-container" class="options"></div>
+  <!-- Result -->
+  <div id="result">
 
-</div>
+    <div class="result-badge">✦ Seu Resultado</div>
 
-<div id="result">
+    <div class="result-image-wrap">
+      <img id="result-image" class="result-image" src="" alt="">
+    </div>
 
-<h1>Seu Resultado</h1>
+    <div id="result-text" class="result-title"></div>
+    <div id="result-subtitle" class="result-subtitle"></div>
+    <div id="result-desc" class="result-desc"></div>
 
-<img id="result-image" class="result-image" src="">
+    <!-- Profile type box -->
+    <div class="result-type-box">
+      <div class="result-type-header">Você tende a defender</div>
+      <div class="result-type-title" id="result-type-title"></div>
+      <ul class="result-type-list" id="result-type-list"></ul>
+    </div>
 
-<div id="result-text" class="result-title"></div>
+    <!-- Score breakdown -->
+    <div class="score-breakdown">
+      <h3>Distribuição de respostas</h3>
+      <div id="score-bars"></div>
+    </div>
 
-<div id="result-desc" class="result-desc"></div>
+    <button class="restart-btn" onclick="location.reload()">↺ Refazer o Quiz</button>
 
-<div class="score-box" id="score-box"></div>
-
-<button class="restart-btn" onclick="location.reload()">
-Refazer Quiz
-</button>
-
-</div>
+  </div>
 
 </div>
 
 <script>
-
 const questions = [
-
-{
-text: "Uma economia ideal seria…",
-options: [
-{ text: "Livre mercado regulado, com impostos progressivos e combate às desigualdades.", type: "social" },
-{ text: "Mercado livre com regulação limitada e foco em estabilidade.", type: "conservador" },
-{ text: "Laissez-faire com Estado mínimo garantindo apenas contratos e propriedade.", type: "minarquista" }
-]
-},
-
-{
-text: "Sobre programas sociais…",
-options: [
-{ text: "Devem ser expandidos dentro de um Estado de bem-estar social robusto.", type: "social" },
-{ text: "Devem ser focalizados para garantir um piso mínimo.", type: "conservador" },
-{ text: "Devem ser substituídos por caridade e iniciativa privada.", type: "minarquista" }
-]
-},
-
-{
-text: "Justiça e igualdade significam…",
-options: [
-{ text: "Garantir oportunidades mais justas para todos.", type: "social" },
-{ text: "Garantir igualdade perante a lei e eficiência econômica.", type: "conservador" },
-{ text: "O Estado não deve buscar igualdade social.", type: "minarquista" }
-]
-},
-
-{
-text: "Sobre relações internacionais…",
-options: [
-{ text: "Fronteiras abertas e multiculturalismo fortalecem a liberdade.", type: "social" },
-{ text: "Livre comércio é importante, mas tradições nacionais vêm primeiro.", type: "conservador" },
-{ text: "Livre circulação sem interferência estatal.", type: "minarquista" }
-]
-},
-
-{
-text: "Sobre aborto…",
-options: [
-{ text: "Deve ser legalizado como questão de autonomia individual.", type: "social" },
-{ text: "Apenas nos casos previstos em lei atualmente.", type: "conservador" },
-{ text: "O Estado não deve interferir na decisão individual.", type: "minarquista" }
-]
-},
-
-{
-text: "Política de drogas:",
-options: [
-{ text: "Descriminalização total com foco em saúde pública.", type: "social" },
-{ text: "Sou contra a liberação; isso ameaça a ordem social.", type: "conservador" },
-{ text: "Legalização total; cada indivíduo decide sobre seu corpo.", type: "minarquista" }
-]
-},
-
-{
-text: "Qual princípio é mais importante?",
-options: [
-{ text: "Inclusão social e igualdade de oportunidades.", type: "social" },
-{ text: "Estabilidade institucional e responsabilidade econômica.", type: "conservador" },
-{ text: "Liberdade individual acima de qualquer intervenção estatal.", type: "minarquista" }
-]
-}
-
+  {
+    text: "1. Uma economia ideal seria…",
+    options: [
+      { text: "A) Um livre mercado regulado, com impostos progressivos e agências que combatam falhas de mercado e desigualdades.", type: "A" },
+      { text: "B) Uma economia de mercado com poucas regulações, foco em crescimento econômico e responsabilidade fiscal.", type: "B" },
+      { text: "C) Um laissez-faire quase absoluto, com o Estado assegurando apenas contratos e direitos de propriedade.", type: "C" }
+    ]
+  },
+  {
+    text: "2. Sobre direitos sociais e programas de assistência:",
+    options: [
+      { text: "A) O Estado deve expandir programas sociais e construir um sistema robusto de bem-estar social.", type: "A" },
+      { text: "B) Programas sociais devem existir apenas para garantir um piso mínimo de subsistência.", type: "B" },
+      { text: "C) Programas sociais deveriam ser substituídos por iniciativas privadas, caridade e soluções voluntárias.", type: "C" }
+    ]
+  },
+  {
+    text: "3. Justiça social e igualdade:",
+    options: [
+      { text: "A) O Estado deve atuar para reduzir desigualdades e garantir oportunidades mais justas.", type: "A" },
+      { text: "B) A igualdade perante a lei é suficiente; o mercado deve ser o principal organizador da sociedade.", type: "B" },
+      { text: "C) Qualquer tentativa estatal de promover igualdade interfere indevidamente na liberdade individual.", type: "C" }
+    ]
+  },
+  {
+    text: "4. Relações internacionais e imigração:",
+    options: [
+      { text: "A) Fronteiras mais abertas e cooperação internacional fortalecem a sociedade.", type: "A" },
+      { text: "B) O livre comércio é importante, mas a preservação cultural e a estabilidade nacional vêm primeiro.", type: "B" },
+      { text: "C) Pessoas e mercadorias devem circular livremente, sem grandes restrições impostas pelos governos.", type: "C" }
+    ]
+  },
+  {
+    text: "5. Sobre aborto:",
+    options: [
+      { text: "A) Deve ser legalizado e garantido como questão de autonomia individual e saúde pública.", type: "A" },
+      { text: "B) Deve permanecer permitido apenas nos casos previstos em lei ou em situações excepcionais.", type: "B" },
+      { text: "C) O Estado não deveria interferir; a decisão pertence ao indivíduo e às instituições privadas.", type: "C" }
+    ]
+  },
+  {
+    text: "6. Política de drogas:",
+    options: [
+      { text: "A) A descriminalização deve vir acompanhada de políticas públicas de saúde e redução de danos.", type: "A" },
+      { text: "B) A liberação ampla pode comprometer a ordem social e os vínculos familiares.", type: "B" },
+      { text: "C) Todas as drogas deveriam ser legalizadas, pois cada indivíduo é dono do próprio corpo.", type: "C" }
+    ]
+  },
+  {
+    text: "7. Papel do Estado na vida cotidiana:",
+    options: [
+      { text: "A) O Estado deve garantir serviços públicos universais e atuar para corrigir desigualdades sociais.", type: "A" },
+      { text: "B) O Estado deve ser limitado, mas necessário para manter ordem, infraestrutura e estabilidade econômica.", type: "B" },
+      { text: "C) O Estado deve existir apenas para polícia, tribunais e defesa nacional.", type: "C" }
+    ]
+  },
+  {
+    text: "8. Tributação:",
+    options: [
+      { text: "A) Impostos progressivos são necessários para financiar políticas públicas e reduzir desigualdades.", type: "A" },
+      { text: "B) Os impostos devem ser moderados e previsíveis, evitando sufocar o crescimento econômico.", type: "B" },
+      { text: "C) A tributação deveria ser mínima, restrita ao financiamento básico das funções essenciais do Estado.", type: "C" }
+    ]
+  },
+  {
+    text: "9. Liberdade de expressão:",
+    options: [
+      { text: "A) É fundamental, mas deve haver restrições contra discursos que incentivem violência ou discriminação.", type: "A" },
+      { text: "B) Deve ser ampla, mas equilibrada com a preservação da ordem e das instituições.", type: "B" },
+      { text: "C) Deve ser praticamente irrestrita, exceto em casos de ameaça ou agressão direta.", type: "C" }
+    ]
+  },
+  {
+    text: "10. Segurança pública:",
+    options: [
+      { text: "A) O combate ao crime deve priorizar prevenção social, educação e redução da desigualdade.", type: "A" },
+      { text: "B) Segurança pública depende de leis firmes, polícia eficiente e estabilidade institucional.", type: "B" },
+      { text: "C) O indivíduo deve ter amplo direito à autodefesa, e o poder coercitivo do Estado deve ser reduzido.", type: "C" }
+    ]
+  }
 ];
 
-// embaralhar perguntas
-questions.sort(() => Math.random() - 0.5);
-
 let currentQuestion = 0;
+let scores = { A: 0, B: 0, C: 0 };
+const total = questions.length;
 
-let scores = {
-social: 0,
-conservador: 0,
-minarquista: 0
+const results = {
+  A: {
+    title: "Liberal Social",
+    subtitle: "Cosmopolita / Progressista",
+    desc: "Você acredita que um mercado livre mais justo exige regulação inteligente, proteção social robusta e políticas ativas de redução de desigualdades.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/5/50/John_Rawls_1971.jpg",
+    defends: [
+      "Economia de mercado com regulação ativa",
+      "Estado de bem-estar social",
+      "Direitos civis ampliados e multiculturalismo",
+      "Cooperação internacional e fronteiras mais abertas",
+      "Redução de desigualdades como objetivo político central"
+    ]
+  },
+  B: {
+    title: "Neoliberal",
+    subtitle: "Escola de Chicago",
+    desc: "Você valoriza mercados livres e responsabilidade fiscal, mas reconhece o papel do Estado na manutenção da ordem, das instituições e de um mínimo social.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/79/Milton_Friedman.jpg",
+    defends: [
+      "Economia de mercado com Estado limitado",
+      "Responsabilidade fiscal e estabilidade institucional",
+      "Valores tradicionais e prudência em mudanças sociais",
+      "Livre comércio aliado à preservação cultural",
+      "Menor intervenção estatal na economia"
+    ]
+  },
+  C: {
+    title: "Minarquista",
+    subtitle: "Libertário / Estado Mínimo",
+    desc: "Você defende um Estado reduzido ao mínimo essencial, liberdade individual quase irrestrita e mercados sem intervenção governamental significativa.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/79/Friedrich_Hayek_portrait.jpg",
+    defends: [
+      "Estado mínimo: polícia, tribunais e defesa",
+      "Forte proteção à propriedade privada",
+      "Livre mercado quase irrestrito",
+      "Liberdade civil ampla e laissez-faire",
+      "Redução drástica da interferência estatal"
+    ]
+  }
 };
 
+const labels = { A: "Liberal Social", B: "Neoliberal", C: "Minarquista" };
+
+function updateChips() {
+  let maxVal = Math.max(scores.A, scores.B, scores.C);
+  ['A','B','C'].forEach(t => {
+    const chip = document.getElementById('chip-' + t);
+    document.getElementById('count-' + t).textContent = scores[t];
+    if (scores[t] > 0 && scores[t] === maxVal) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
+}
+
 function loadQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById("question-number").textContent = `Questão ${currentQuestion + 1}`;
+  document.getElementById("question-text").textContent = q.text;
 
-const q = questions[currentQuestion];
+  const container = document.getElementById("options-container");
+  container.innerHTML = "";
 
-document.getElementById("question-text").innerText = q.text;
+  q.options.forEach(option => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.textContent = option.text;
+    btn.onclick = () => selectOption(option.type);
+    container.appendChild(btn);
+  });
 
-const optionsContainer = document.getElementById("options-container");
-
-optionsContainer.innerHTML = "";
-
-q.options.forEach(option => {
-
-const btn = document.createElement("button");
-
-btn.innerText = option.text;
-
-btn.onclick = () => selectOption(option.type);
-
-optionsContainer.appendChild(btn);
-
-});
-
-document.getElementById("progress").style.width =
-((currentQuestion / questions.length) * 100) + "%";
+  const pct = Math.round((currentQuestion / total) * 100);
+  document.getElementById("progress").style.width = pct + "%";
+  document.getElementById("progress-label").textContent = `Questão ${currentQuestion + 1} de ${total}`;
+  document.getElementById("progress-pct").textContent = pct + "%";
 }
 
 function selectOption(type) {
+  scores[type]++;
+  currentQuestion++;
+  updateChips();
 
-scores[type]++;
-
-currentQuestion++;
-
-if(currentQuestion < questions.length) {
-loadQuestion();
-} else {
-showResult();
-}
-
+  if (currentQuestion < total) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
 }
 
 function showResult() {
+  document.getElementById("quiz-ui").style.display = "none";
+  document.getElementById("progress").style.width = "100%";
+  document.getElementById("progress-label").textContent = "Concluído!";
+  document.getElementById("progress-pct").textContent = "100%";
 
-document.getElementById("quiz-ui").style.display = "none";
+  const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const r = results[winner];
 
-document.getElementById("result").style.display = "block";
+  document.getElementById("result-text").textContent = r.title;
+  document.getElementById("result-subtitle").textContent = r.subtitle;
+  document.getElementById("result-desc").textContent = r.desc;
+  document.getElementById("result-image").src = r.image;
+  document.getElementById("result-image").alt = r.title;
+  document.getElementById("result-type-title").textContent = r.title + " — " + r.subtitle;
 
-let winner = Object.keys(scores).reduce((a, b) =>
-scores[a] > scores[b] ? a : b
-);
+  const list = document.getElementById("result-type-list");
+  list.innerHTML = "";
+  r.defends.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.appendChild(li);
+  });
 
-const results = {
+  // Score bars
+  const barsWrap = document.getElementById("score-bars");
+  barsWrap.innerHTML = "";
+  ['A','B','C'].forEach(t => {
+    const pct = total > 0 ? Math.round((scores[t] / total) * 100) : 0;
+    const row = document.createElement("div");
+    row.className = "score-row";
+    row.innerHTML = `
+      <div class="score-row-label">${labels[t]}</div>
+      <div class="score-row-bar-wrap">
+        <div class="score-row-bar" style="width: 0%" data-target="${pct}%"></div>
+      </div>
+      <div class="score-row-num">${scores[t]}</div>
+    `;
+    barsWrap.appendChild(row);
+  });
 
-social: {
-title: "Social / Cosmopolita / Igualitário",
-desc: "Você tende ao liberalismo progressista, valorizando inclusão social, direitos individuais, cosmopolitismo e igualdade de oportunidades.",
-image: "https://upload.wikimedia.org/wikipedia/commons/5/56/John_Rawls.jpg"
-},
+  document.getElementById("result").style.display = "block";
 
-conservador: {
-title: "Conservador / Clássico / Chicago",
-desc: "Você tende ao liberalismo clássico ou conservador, priorizando estabilidade institucional, responsabilidade econômica e preservação social.",
-image: "https://upload.wikimedia.org/wikipedia/commons/7/79/Milton_Friedman.jpg"
-},
-
-minarquista: {
-title: "Minarquista / Libertarian",
-desc: "Você acredita na máxima liberdade individual possível e na redução extrema da intervenção estatal.",
-image: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Murray_Rothbard.jpg"
-}
-
-};
-
-document.getElementById("result-text").innerText =
-results[winner].title;
-
-document.getElementById("result-desc").innerText =
-results[winner].desc;
-
-document.getElementById("result-image").src =
-results[winner].image;
-
-document.getElementById("progress").style.width = "100%";
-
-document.getElementById("score-box").innerHTML = `
-
-<div class="score-item">
-Social: ${scores.social}
-</div>
-
-<div class="score-item">
-Conservador: ${scores.conservador}
-</div>
-
-<div class="score-item">
-Minarquista: ${scores.minarquista}
-</div>
-
-`;
-
+  // Animate bars after a small delay
+  setTimeout(() => {
+    document.querySelectorAll('.score-row-bar').forEach(bar => {
+      bar.style.width = bar.dataset.target;
+    });
+  }, 200);
 }
 
 loadQuestion();
-
 </script>
-
 </body>
 </html>
-"""
-
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print("index.html criado com sucesso!")
