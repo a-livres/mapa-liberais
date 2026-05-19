@@ -228,6 +228,14 @@
   }
   .restart-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
+  /* ── Pensadores ── */
+  .thinkers-section { margin-bottom: 32px; text-align: left; }
+  .thinkers-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 16px; text-align: center; }
+  .thinker-card { display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px; border-radius: 14px; background: var(--purple-dim); margin-bottom: 10px; }
+  .thinker-avatar { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; color: #fff; }
+  .thinker-name { font-size: 0.9rem; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+  .thinker-desc { font-size: 0.82rem; color: #555; line-height: 1.5; }
+
   @media (max-width: 600px) {
     #quiz-container { padding: 36px 22px; }
     .score-label { width: 90px; font-size: 0.72rem; }
@@ -285,6 +293,10 @@
     <div class="scores-section">
       <div class="scores-title">Distribuição das suas respostas</div>
       <div id="score-bars"></div>
+    </div>
+    <div class="thinkers-section">
+      <div class="thinkers-title">Pensadores de referência</div>
+      <div id="thinkers-list"></div>
     </div>
     <button class="restart-btn" onclick="location.reload()">↺ &nbsp;Refazer o quiz</button>
   </div>
@@ -388,23 +400,37 @@ const results = {
     title: "Liberal Social",
     subtitle: "Progressista / Cosmopolita",
     desc: "Você tende a defender economia de mercado com regulação, um Estado de bem-estar social robusto e ampliação de direitos civis. Acredita na cooperação internacional, no multiculturalismo e que reduzir desigualdades é um objetivo político legítimo — sem abrir mão da liberdade individual como valor central.",
-    tags: ["Economia regulada", "Bem-estar social", "Direitos civis amplos", "Cooperação internacional", "Redução de desigualdades"]
+    tags: ["Economia regulada", "Bem-estar social", "Direitos civis amplos", "Cooperação internacional", "Redução de desigualdades"],
+    thinkers: [
+      { name: "John Stuart Mill", desc: "Defensor da liberdade individual e da autonomia como princípio central da vida pública." },
+      { name: "John Rawls", desc: "Formulou a teoria da justiça como equidade, priorizando os menos favorecidos na organização social." },
+      { name: "Martha Nussbaum", desc: "Desenvolveu a abordagem das capacidades, colocando a dignidade humana no centro da política." }
+    ]
   },
   B: {
-    title: "Liberal Conservador",
-    subtitle: "Neoliberal",
+    title: "Neoliberal",
+    subtitle: "",
     desc: "Você tende a defender economia de mercado com Estado limitado, responsabilidade fiscal e estabilidade institucional. Valoriza tradições e prefere prudência nas mudanças sociais, combinando livre comércio com preservação cultural e menor intervenção estatal na economia.",
-    tags: ["Estado limitado", "Responsabilidade fiscal", "Livre comércio", "Estabilidade institucional", "Prudência nas reformas"]
+    tags: ["Estado limitado", "Responsabilidade fiscal", "Livre comércio", "Estabilidade institucional", "Prudência nas reformas"],
+    thinkers: [
+      { name: "Friedrich Hayek", desc: "Crítico do planejamento central, defendeu a ordem espontânea do mercado e os limites do conhecimento estatal." },
+      { name: "Milton Friedman", desc: "Economista da Escola de Chicago, advogou por liberdade econômica, controle monetário e mínima intervenção do Estado." }
+    ]
   },
   C: {
     title: "Minarquista",
     subtitle: "Libertário",
     desc: "Você tende a defender o Estado mínimo, com forte proteção à propriedade privada e à liberdade individual. Acredita em livre mercado quase irrestrito, amplas liberdades civis e redução drástica da interferência estatal tanto na vida econômica quanto na pessoal.",
-    tags: ["Estado mínimo", "Propriedade privada", "Livre mercado", "Liberdades civis", "Autonomia individual"]
+    tags: ["Estado mínimo", "Propriedade privada", "Livre mercado", "Liberdades civis", "Autonomia individual"],
+    thinkers: [
+      { name: "Robert Nozick", desc: "Defendeu o Estado mínimo como único compatível com os direitos individuais, em contraponto a Rawls." },
+      { name: "Ludwig von Mises", desc: "Pilar da Escola Austríaca, argumentou pela impossibilidade do cálculo econômico racional sob o socialismo." },
+      { name: "Ayn Rand", desc: "Filósofa do objetivismo, celebrou o individualismo racional e o capitalismo laissez-faire como expressão máxima da liberdade." }
+    ]
   }
 };
 
-const scoreLabels = { A: "Liberal Social", B: "Liberal Conservador", C: "Minarquista" };
+const scoreLabels = { A: "Liberal Social", B: "Neoliberal", C: "Minarquista" };
 
 // Embaralhar perguntas e opções de cada pergunta
 questions.sort(() => Math.random() - 0.5);
@@ -548,6 +574,21 @@ function showResult() {
     span.className = 'tag';
     span.textContent = t;
     tagsEl.appendChild(span);
+  });
+
+  // Pensadores
+  const thinkersEl = document.getElementById('thinkers-list');
+  r.thinkers.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'thinker-card';
+    card.innerHTML = `
+      <div class="thinker-avatar">${t.name.charAt(0)}</div>
+      <div>
+        <div class="thinker-name">${t.name}</div>
+        <div class="thinker-desc">${t.desc}</div>
+      </div>
+    `;
+    thinkersEl.appendChild(card);
   });
 
   const barsEl = document.getElementById('score-bars');
