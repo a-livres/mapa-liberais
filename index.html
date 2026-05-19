@@ -1,192 +1,369 @@
 import os
 
-# Conteúdo do HTML com CSS e JS integrados
 html_content = """
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz: Mapa Ideológico Liberal</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        #quiz-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-        }
-        h1 { color: #2c3e50; margin-bottom: 20px; }
-        .question { font-size: 1.2em; margin-bottom: 25px; font-weight: 600; }
-        .options { display: flex; flex-direction: column; gap: 12px; }
-        button {
-            padding: 12px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            border: 2px solid #3498db;
-            background-color: white;
-            color: #3498db;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        button:hover {
-            background-color: #3498db;
-            color: white;
-        }
-        #result { display: none; }
-        .result-title { font-size: 1.5em; font-weight: bold; margin-top: 20px; color: #27ae60; }
-        .progress-bar {
-            height: 10px;
-            background-color: #eee;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        #progress {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width 0.3s;
-        }
-    </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mapa Ideológico Liberal</title>
+
+<style>
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #640b9b;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #222;
+}
+
+#quiz-container {
+    background: white;
+    width: 90%;
+    max-width: 850px;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+h1 {
+    text-align: center;
+    color: #640b9b;
+    margin-bottom: 25px;
+}
+
+.question {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+button {
+    padding: 15px;
+    border: 2px solid #640b9b;
+    background: white;
+    color: #640b9b;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: 0.25s;
+    text-align: left;
+}
+
+button:hover {
+    background: #640b9b;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+#progress {
+    height: 100%;
+    width: 0%;
+    background: #640b9b;
+    transition: width 0.3s;
+}
+
+#result {
+    display: none;
+    text-align: center;
+}
+
+.result-title {
+    font-size: 2em;
+    color: #640b9b;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.result-desc {
+    margin-top: 18px;
+    line-height: 1.7;
+    font-size: 1.1em;
+}
+
+.result-image {
+    width: 240px;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 18px;
+    margin-top: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.restart-btn {
+    margin-top: 30px;
+    padding: 14px 22px;
+    border: none;
+    background: #640b9b;
+    color: white;
+    border-radius: 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.restart-btn:hover {
+    opacity: 0.9;
+}
+
+.score-box {
+    margin-top: 25px;
+    text-align: left;
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.score-item {
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+</style>
+
 </head>
+
 <body>
 
 <div id="quiz-container">
-    <div id="quiz-ui">
-        <div class="progress-bar"><div id="progress"></div></div>
-        <div id="question-text" class="question">Carregando pergunta...</div>
-        <div id="options-container" class="options"></div>
-    </div>
 
-    <div id="result">
-        <h1>Seu Resultado</h1>
-        <div id="result-text" class="result-title"></div>
-        <p id="result-desc"></p>
-        <button onclick="location.reload()" style="margin-top: 20px;">Refazer Quiz</button>
-    </div>
+<div id="quiz-ui">
+
+<h1>Mapa Ideológico Liberal</h1>
+
+<div class="progress-bar">
+<div id="progress"></div>
+</div>
+
+<div id="question-text" class="question"></div>
+
+<div id="options-container" class="options"></div>
+
+</div>
+
+<div id="result">
+
+<h1>Seu Resultado</h1>
+
+<img id="result-image" class="result-image" src="">
+
+<div id="result-text" class="result-title"></div>
+
+<div id="result-desc" class="result-desc"></div>
+
+<div class="score-box" id="score-box"></div>
+
+<button class="restart-btn" onclick="location.reload()">
+Refazer Quiz
+</button>
+
+</div>
+
 </div>
 
 <script>
-    const questions = [
-        {
-            text: "Uma economia ideal seria...",
-            options: [
-                { text: "Livre mercado regulado, com impostos progressivos e combate a desigualdades.", type: "social" },
-                { text: "Laissez-faire, com o Estado assegurando apenas contratos e propriedade.", type: "minarquista" }
-            ]
-        },
-        {
-            text: "Sobre direitos sociais e rede de proteção:",
-            options: [
-                { text: "Expandidos, com a construção de um Estado de bem-estar social robusto.", type: "social" },
-                { text: "Focalizados, garantindo apenas um piso mínimo de subsistência.", type: "conservador" },
-                { text: "Extintos, mantendo-se o foco apenas em iniciativa privada e caridade.", type: "minarquista" }
-            ]
-        },
-        {
-            text: "Justiça e Igualdade:",
-            options: [
-                { text: "O Estado deve assegurar um ponto de partida justo para todos.", type: "social" },
-                { text: "Igualdade perante a lei, mas o foco principal deve ser a eficiência do mercado.", type: "conservador" },
-                { text: "O Estado não deve buscar justiça social, pois interfere na liberdade individual.", type: "minarquista" }
-            ]
-        },
-        {
-            text: "Relações Internacionais:",
-            options: [
-                { text: "Fronteiras abertas, multiculturalismo e cooperação global.", type: "social" },
-                { text: "Livre comércio, mas preservação dos costumes e estabilidade nacional primeiro.", type: "conservador" }
-            ]
-        },
-        {
-            text: "Sobre o Aborto:",
-            options: [
-                { text: "Legalizado e garantido pelo Estado (autonomia e saúde pública).", type: "social" },
-                { text: "Legalizado conforme consenso científico sobre consciência fetal.", type: "social" },
-                { text: "Apenas nos casos atuais (estupro, risco de vida, anencefalia).", type: "conservador" },
-                { text: "Decisão individual/clínicas privadas sem interferência estatal.", type: "minarquista" }
-            ]
-        },
-        {
-            text: "Política de Drogas:",
-            options: [
-                { text: "Descriminalização total; foco em saúde pública e redução de danos.", type: "social" },
-                { text: "Contra a liberação; drogas destroem a família e a ordem.", type: "conservador" },
-                { text: "Legalização total; o indivíduo é dono do seu corpo.", type: "minarquista" }
-            ]
-        }
-    ];
 
-    let currentQuestionIndex = 0;
-    let scores = { social: 0, conservador: 0, minarquista: 0 };
+const questions = [
 
-    function loadQuestion() {
-        const q = questions[currentQuestionIndex];
-        document.getElementById("question-text").innerText = q.text;
-        const optionsDiv = document.getElementById("options-container");
-        optionsDiv.innerHTML = "";
+{
+text: "Uma economia ideal seria…",
+options: [
+{ text: "Livre mercado regulado, com impostos progressivos e combate às desigualdades.", type: "social" },
+{ text: "Mercado livre com regulação limitada e foco em estabilidade.", type: "conservador" },
+{ text: "Laissez-faire com Estado mínimo garantindo apenas contratos e propriedade.", type: "minarquista" }
+]
+},
 
-        q.options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.innerText = opt.text;
-            btn.onclick = () => selectOption(opt.type);
-            optionsDiv.appendChild(btn);
-        });
+{
+text: "Sobre programas sociais…",
+options: [
+{ text: "Devem ser expandidos dentro de um Estado de bem-estar social robusto.", type: "social" },
+{ text: "Devem ser focalizados para garantir um piso mínimo.", type: "conservador" },
+{ text: "Devem ser substituídos por caridade e iniciativa privada.", type: "minarquista" }
+]
+},
 
-        document.getElementById("progress").style.width = ((currentQuestionIndex / questions.length) * 100) + "%";
-    }
+{
+text: "Justiça e igualdade significam…",
+options: [
+{ text: "Garantir oportunidades mais justas para todos.", type: "social" },
+{ text: "Garantir igualdade perante a lei e eficiência econômica.", type: "conservador" },
+{ text: "O Estado não deve buscar igualdade social.", type: "minarquista" }
+]
+},
 
-    function selectOption(type) {
-        scores[type]++;
-        currentQuestionIndex++;
+{
+text: "Sobre relações internacionais…",
+options: [
+{ text: "Fronteiras abertas e multiculturalismo fortalecem a liberdade.", type: "social" },
+{ text: "Livre comércio é importante, mas tradições nacionais vêm primeiro.", type: "conservador" },
+{ text: "Livre circulação sem interferência estatal.", type: "minarquista" }
+]
+},
 
-        if (currentQuestionIndex < questions.length) {
-            loadQuestion();
-        } else {
-            showResult();
-        }
-    }
+{
+text: "Sobre aborto…",
+options: [
+{ text: "Deve ser legalizado como questão de autonomia individual.", type: "social" },
+{ text: "Apenas nos casos previstos em lei atualmente.", type: "conservador" },
+{ text: "O Estado não deve interferir na decisão individual.", type: "minarquista" }
+]
+},
 
-    function showResult() {
-        document.getElementById("quiz-ui").style.display = "none";
-        const resDiv = document.getElementById("result");
-        resDiv.style.display = "block";
+{
+text: "Política de drogas:",
+options: [
+{ text: "Descriminalização total com foco em saúde pública.", type: "social" },
+{ text: "Sou contra a liberação; isso ameaça a ordem social.", type: "conservador" },
+{ text: "Legalização total; cada indivíduo decide sobre seu corpo.", type: "minarquista" }
+]
+},
 
-        let winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-        
-        const resultsData = {
-            social: {
-                title: "Social / Cosmopolita / Igualitário (Progressista)",
-                desc: "Você acredita em um liberalismo voltado para a justiça social, direitos civis amplos e um papel ativo do Estado na correção de desigualdades."
-            },
-            conservador: {
-                title: "Conservador / Clássico / Chicago (Neoliberal)",
-                desc: "Você valoriza a eficiência do mercado e a liberdade econômica, mas acredita na manutenção da ordem social, valores tradicionais e estabilidade."
-            },
-            minarquista: {
-                title: "Minarquista (Libertarian)",
-                desc: "Para você, o Estado deve ser reduzido ao mínimo absoluto (apenas polícia e justiça) ou inexistente, priorizando a soberania individual total."
-            }
-        };
+{
+text: "Qual princípio é mais importante?",
+options: [
+{ text: "Inclusão social e igualdade de oportunidades.", type: "social" },
+{ text: "Estabilidade institucional e responsabilidade econômica.", type: "conservador" },
+{ text: "Liberdade individual acima de qualquer intervenção estatal.", type: "minarquista" }
+]
+}
 
-        document.getElementById("result-text").innerText = resultsData[winner].title;
-        document.getElementById("result-desc").innerText = resultsData[winner].desc;
-    }
+];
 
-    loadQuestion();
+// embaralhar perguntas
+questions.sort(() => Math.random() - 0.5);
+
+let currentQuestion = 0;
+
+let scores = {
+social: 0,
+conservador: 0,
+minarquista: 0
+};
+
+function loadQuestion() {
+
+const q = questions[currentQuestion];
+
+document.getElementById("question-text").innerText = q.text;
+
+const optionsContainer = document.getElementById("options-container");
+
+optionsContainer.innerHTML = "";
+
+q.options.forEach(option => {
+
+const btn = document.createElement("button");
+
+btn.innerText = option.text;
+
+btn.onclick = () => selectOption(option.type);
+
+optionsContainer.appendChild(btn);
+
+});
+
+document.getElementById("progress").style.width =
+((currentQuestion / questions.length) * 100) + "%";
+}
+
+function selectOption(type) {
+
+scores[type]++;
+
+currentQuestion++;
+
+if(currentQuestion < questions.length) {
+loadQuestion();
+} else {
+showResult();
+}
+
+}
+
+function showResult() {
+
+document.getElementById("quiz-ui").style.display = "none";
+
+document.getElementById("result").style.display = "block";
+
+let winner = Object.keys(scores).reduce((a, b) =>
+scores[a] > scores[b] ? a : b
+);
+
+const results = {
+
+social: {
+title: "Social / Cosmopolita / Igualitário",
+desc: "Você tende ao liberalismo progressista, valorizando inclusão social, direitos individuais, cosmopolitismo e igualdade de oportunidades.",
+image: "https://upload.wikimedia.org/wikipedia/commons/5/56/John_Rawls.jpg"
+},
+
+conservador: {
+title: "Conservador / Clássico / Chicago",
+desc: "Você tende ao liberalismo clássico ou conservador, priorizando estabilidade institucional, responsabilidade econômica e preservação social.",
+image: "https://upload.wikimedia.org/wikipedia/commons/7/79/Milton_Friedman.jpg"
+},
+
+minarquista: {
+title: "Minarquista / Libertarian",
+desc: "Você acredita na máxima liberdade individual possível e na redução extrema da intervenção estatal.",
+image: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Murray_Rothbard.jpg"
+}
+
+};
+
+document.getElementById("result-text").innerText =
+results[winner].title;
+
+document.getElementById("result-desc").innerText =
+results[winner].desc;
+
+document.getElementById("result-image").src =
+results[winner].image;
+
+document.getElementById("progress").style.width = "100%";
+
+document.getElementById("score-box").innerHTML = `
+
+<div class="score-item">
+Social: ${scores.social}
+</div>
+
+<div class="score-item">
+Conservador: ${scores.conservador}
+</div>
+
+<div class="score-item">
+Minarquista: ${scores.minarquista}
+</div>
+
+`;
+
+}
+
+loadQuestion();
+
 </script>
 
 </body>
@@ -195,3 +372,5 @@ html_content = """
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(html_content)
+
+print("index.html criado com sucesso!")
