@@ -603,15 +603,22 @@ function showResult() {
   r.thinkers.forEach(t => {
     const card = document.createElement('div');
     card.className = 'thinker-card';
-    card.innerHTML = `
-      <div class="thinker-avatar" style="background: none; overflow: hidden; padding: 0;">
-        ${thinkerKeys[t.name] ? `<img src="${thinkerImages[thinkerKeys[t.name]]}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />` : `<span style="background:linear-gradient(135deg,var(--purple),var(--teal));width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;">${t.name.charAt(0)}</span>`}
-      </div>
-      <div>
-        <div class="thinker-name">${t.name}</div>
-        <div class="thinker-desc">${t.desc}</div>
-      </div>
-    `;
+    const avatarEl = document.createElement('div');
+    avatarEl.className = 'thinker-avatar';
+    const imgKey = thinkerKeys[t.name];
+    if (imgKey && thinkerImages[imgKey]) {
+      avatarEl.style.cssText = 'background:none;overflow:hidden;padding:0;';
+      const imgEl = document.createElement('img');
+      imgEl.src = thinkerImages[imgKey];
+      imgEl.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+      avatarEl.appendChild(imgEl);
+    } else {
+      avatarEl.textContent = t.name.charAt(0);
+    }
+    const infoEl = document.createElement('div');
+    infoEl.innerHTML = '<div class="thinker-name">' + t.name + '</div><div class="thinker-desc">' + t.desc + '</div>';
+    card.appendChild(avatarEl);
+    card.appendChild(infoEl);
     thinkersEl.appendChild(card);
   });
 
