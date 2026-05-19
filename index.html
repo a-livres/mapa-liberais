@@ -3,250 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Liberal — Livres</title>
+<title>Quiz Liberal: Livres</title>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --purple: #640b9b;
-    --teal:   #00b99f;
-    --light:  #efefef;
-    --dark:   #000000;
-    --purple-light: #7d12c0;
-    --purple-dim:   rgba(100,11,155,0.08);
-    --teal-dim:     rgba(0,185,159,0.12);
+    --purple: #640b9b; --teal: #00b99f; --light: #efefef; --dark: #000000;
+    --purple-light: #7d12c0; --purple-dim: rgba(100,11,155,0.08); --teal-dim: rgba(0,185,159,0.12);
   }
-
   body {
-    font-family: 'Figtree', sans-serif;
-    background: var(--light);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 16px;
+    font-family: "Figtree", sans-serif; background: var(--light);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 32px 16px;
   }
-
   body::before, body::after {
-    content: '';
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(90px);
-    pointer-events: none;
-    z-index: 0;
+    content: ""; position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0;
   }
-  body::before {
-    width: 420px; height: 420px;
-    background: rgba(100,11,155,0.13);
-    top: -80px; left: -120px;
-  }
-  body::after {
-    width: 360px; height: 360px;
-    background: rgba(0,185,159,0.13);
-    bottom: -60px; right: -100px;
-  }
+  body::before { width: 420px; height: 420px; background: rgba(100,11,155,0.13); top: -80px; left: -120px; }
+  body::after  { width: 360px; height: 360px; background: rgba(0,185,159,0.13); bottom: -60px; right: -100px; }
 
   #quiz-container {
-    position: relative;
-    z-index: 1;
-    background: #fff;
-    width: 100%;
-    max-width: 780px;
-    border-radius: 24px;
-    padding: 48px 52px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 16px 48px rgba(100,11,155,0.10);
-    overflow: hidden;
+    position: relative; z-index: 1; background: #fff; width: 100%; max-width: 800px;
+    border-radius: 24px; padding: 48px 52px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 16px 48px rgba(100,11,155,0.10); overflow: hidden;
   }
-
   #quiz-container::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 5px;
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
     background: linear-gradient(90deg, var(--purple) 0%, var(--teal) 100%);
   }
-
   .quiz-header { text-align: center; margin-bottom: 36px; }
-
-  .quiz-eyebrow {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--teal);
-    margin-bottom: 10px;
-  }
-
+  .quiz-eyebrow { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
   h1 { font-size: clamp(1.45rem, 3vw, 2rem); font-weight: 900; color: var(--dark); line-height: 1.2; }
   h1 span { color: var(--purple); }
 
   .progress-wrap { margin-bottom: 32px; }
-
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #888;
-    margin-bottom: 8px;
-  }
-
+  .progress-meta { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; color: #888; margin-bottom: 8px; }
   .progress-bar { width: 100%; height: 8px; background: var(--light); border-radius: 99px; overflow: hidden; }
+  #progress { height: 100%; width: 0%; background: linear-gradient(90deg, var(--purple), var(--teal)); border-radius: 99px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
 
-  #progress {
-    height: 100%; width: 0%;
-    background: linear-gradient(90deg, var(--purple), var(--teal));
-    border-radius: 99px;
-    transition: width 0.4s cubic-bezier(.4,0,.2,1);
-  }
+  .question-number { font-size: 0.78rem; font-weight: 700; color: var(--purple); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  #question-text { font-size: 1.18rem; font-weight: 700; color: var(--dark); line-height: 1.45; margin-bottom: 24px; }
 
-  .question-number {
-    font-size: 0.78rem; font-weight: 700; color: var(--purple);
-    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
-  }
-
-  #question-text {
-    font-size: 1.18rem; font-weight: 700; color: var(--dark);
-    line-height: 1.45; margin-bottom: 28px;
-  }
-
-  .options { display: flex; flex-direction: column; gap: 12px; }
-
+  .options { display: flex; flex-direction: column; gap: 11px; }
   .option-btn {
-    display: flex; align-items: center; gap: 14px;
-    padding: 16px 20px; border: 2px solid #e0e0e0; background: #fff;
-    color: var(--dark); border-radius: 14px; font-family: 'Figtree', sans-serif;
-    font-size: 0.96rem; font-weight: 500; cursor: pointer; text-align: left;
-    transition: border-color 0.18s, background 0.18s, transform 0.18s, box-shadow 0.18s;
-    line-height: 1.45;
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px;
+    border: 2px solid #e0e0e0; background: #fff; color: var(--dark);
+    border-radius: 14px; font-family: "Figtree", sans-serif; font-size: 0.93rem;
+    font-weight: 500; cursor: pointer; text-align: left;
+    transition: border-color 0.18s, background 0.18s, transform 0.18s, box-shadow 0.18s; line-height: 1.45;
   }
-
   .option-letter {
-    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
-    background: var(--purple-dim); color: var(--purple);
-    font-size: 0.82rem; font-weight: 800;
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--purple-dim); color: var(--purple); font-size: 0.78rem; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
-    transition: background 0.18s, color 0.18s;
+    transition: background 0.18s, color 0.18s; margin-top: 1px;
   }
-
   .option-btn:hover { border-color: var(--purple); background: var(--purple-dim); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(100,11,155,0.10); }
   .option-btn:hover .option-letter { background: var(--purple); color: #fff; }
   .option-btn.selected { border-color: var(--teal); background: var(--teal-dim); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,185,159,0.12); pointer-events: none; }
   .option-btn.selected .option-letter { background: var(--teal); color: #fff; }
 
-  /* ── Tela de e-mail ── */
-  #email-gate {
-    display: none;
-    text-align: center;
-    animation: fadeUp 0.5s ease both;
-  }
-
-  .email-icon {
-    width: 68px; height: 68px; background: var(--purple-dim); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px; font-size: 2rem;
-  }
-
+  /* Email gate */
+  #email-gate { display: none; text-align: center; animation: fadeUp 0.5s ease both; }
+  .email-icon { width: 68px; height: 68px; background: var(--purple-dim); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; }
   .email-gate-title { font-size: 1.55rem; font-weight: 900; color: var(--dark); margin-bottom: 10px; }
-
-  .email-gate-desc {
-    font-size: 0.97rem; color: #666; line-height: 1.65; margin-bottom: 28px;
-    max-width: 440px; margin-left: auto; margin-right: auto;
-  }
-
+  .email-gate-desc { font-size: 0.97rem; color: #666; line-height: 1.65; margin-bottom: 28px; max-width: 440px; margin-left: auto; margin-right: auto; }
   .email-input-wrap { display: flex; gap: 10px; max-width: 480px; margin: 0 auto 8px; }
-
-  .email-input {
-    flex: 1; padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 12px;
-    font-family: 'Figtree', sans-serif; font-size: 0.97rem; color: var(--dark);
-    outline: none; transition: border-color 0.18s;
-  }
+  .email-input { flex: 1; padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 12px; font-family: "Figtree", sans-serif; font-size: 0.97rem; color: var(--dark); outline: none; transition: border-color 0.18s; }
   .email-input:focus { border-color: var(--purple); }
   .email-input.error { border-color: #e53935; }
-
-  .email-submit-btn {
-    padding: 14px 24px; border: none;
-    background: linear-gradient(135deg, var(--purple), var(--purple-light));
-    color: #fff; border-radius: 12px; font-family: 'Figtree', sans-serif;
-    font-size: 0.95rem; font-weight: 700; cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-    box-shadow: 0 4px 16px rgba(100,11,155,0.25); white-space: nowrap;
-  }
+  .email-submit-btn { padding: 14px 24px; border: none; background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; border-radius: 12px; font-family: "Figtree", sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.2s; box-shadow: 0 4px 16px rgba(100,11,155,0.25); white-space: nowrap; }
   .email-submit-btn:hover { opacity: 0.9; transform: translateY(-2px); }
   .email-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
   .email-error-msg { font-size: 0.8rem; color: #e53935; margin-bottom: 8px; display: none; text-align: center; }
-
   .email-status { font-size: 0.85rem; margin-top: 12px; min-height: 20px; font-weight: 600; }
   .email-status.success { color: var(--teal); }
   .email-status.fail { color: #e53935; }
-
-  .email-skip {
-    display: inline-block; margin-top: 16px; font-size: 0.82rem; color: #bbb;
-    cursor: pointer; background: none; border: none;
-    font-family: 'Figtree', sans-serif; text-decoration: underline;
-  }
+  .email-skip { display: inline-block; margin-top: 16px; font-size: 0.82rem; color: #bbb; cursor: pointer; background: none; border: none; font-family: "Figtree", sans-serif; text-decoration: underline; }
   .email-skip:hover { color: #888; }
 
-  /* ── Result ── */
+  /* Result */
   #result { display: none; text-align: center; animation: fadeUp 0.5s ease both; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .result-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
   .result-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--purple-dim); color: var(--purple); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 14px; border-radius: 99px; margin-bottom: 20px; }
   .result-title { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 900; color: var(--dark); margin-bottom: 6px; line-height: 1.15; }
   .result-subtitle { font-size: 1rem; font-weight: 600; color: var(--purple); margin-bottom: 24px; }
   .result-divider { width: 56px; height: 4px; background: linear-gradient(90deg, var(--purple), var(--teal)); border-radius: 99px; margin: 0 auto 24px; }
-  .result-desc { font-size: 1rem; line-height: 1.75; color: #444; max-width: 560px; margin: 0 auto 28px; }
-
+  .result-desc { font-size: 1rem; line-height: 1.75; color: #444; max-width: 580px; margin: 0 auto 28px; }
   .result-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 32px; }
   .tag { font-size: 0.78rem; font-weight: 600; padding: 5px 14px; border-radius: 99px; background: var(--light); color: #555; border: 1.5px solid #ddd; }
 
+  /* Score bars */
   .scores-section { background: var(--light); border-radius: 16px; padding: 24px 28px; margin-bottom: 32px; text-align: left; }
   .scores-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 16px; text-align: center; }
   .score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .score-label { font-size: 0.8rem; font-weight: 700; color: var(--dark); width: 130px; flex-shrink: 0; }
+  .score-label { font-size: 0.78rem; font-weight: 700; color: var(--dark); width: 140px; flex-shrink: 0; }
   .score-track { flex: 1; height: 8px; background: #ddd; border-radius: 99px; overflow: hidden; }
   .score-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--purple), var(--teal)); transition: width 0.9s cubic-bezier(.4,0,.2,1); }
-  .score-val { font-size: 0.78rem; font-weight: 700; color: #888; width: 20px; flex-shrink: 0; text-align: right; }
+  .score-val { font-size: 0.78rem; font-weight: 700; color: #888; width: 28px; flex-shrink: 0; text-align: right; }
 
-  .restart-btn {
-    display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border: none;
-    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%);
-    color: #fff; border-radius: 12px; font-family: 'Figtree', sans-serif;
-    font-size: 0.95rem; font-weight: 700; cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-    box-shadow: 0 4px 16px rgba(100,11,155,0.25);
-  }
-  .restart-btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-  /* ── Pensadores ── */
+  /* Thinkers */
   .thinkers-section { margin-bottom: 32px; text-align: left; }
   .thinkers-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 16px; text-align: center; }
   .thinker-card { display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px; border-radius: 14px; background: var(--purple-dim); margin-bottom: 10px; }
-  .thinker-avatar { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; color: #fff; }
+  .thinker-avatar { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; color: #fff; overflow: hidden; }
   .thinker-name { font-size: 0.9rem; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
   .thinker-desc { font-size: 0.82rem; color: #555; line-height: 1.5; }
 
+  .restart-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border: none; background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%); color: #fff; border-radius: 12px; font-family: "Figtree", sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.2s; box-shadow: 0 4px 16px rgba(100,11,155,0.25); }
+  .restart-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
   @media (max-width: 600px) {
     #quiz-container { padding: 36px 22px; }
-    .score-label { width: 90px; font-size: 0.72rem; }
+    .score-label { width: 100px; font-size: 0.7rem; }
     .email-input-wrap { flex-direction: column; }
     .email-submit-btn { width: 100%; }
   }
-
 </style>
 </head>
 <body>
-
 <div id="quiz-container">
 
   <!-- QUIZ -->
@@ -257,7 +133,7 @@
     </div>
     <div class="progress-wrap">
       <div class="progress-meta">
-        <span id="progress-label">Pergunta 1 de 10</span>
+        <span id="progress-label">Pergunta 1 de 15</span>
         <span id="progress-pct">0%</span>
       </div>
       <div class="progress-bar"><div id="progress"></div></div>
@@ -267,11 +143,11 @@
     <div id="options-container" class="options"></div>
   </div>
 
-  <!-- E-MAIL GATE -->
+  <!-- EMAIL GATE -->
   <div id="email-gate">
     <div class="email-icon">✉️</div>
     <div class="email-gate-title">Quase lá!</div>
-    <p class="email-gate-desc">Informe seu e-mail para ver seu perfil liberal. Prometemos não encher sua caixa de entrada — apenas conteúdo relevante do Livres.</p>
+    <p class="email-gate-desc">Informe seu e-mail para ver seu perfil liberal. Prometemos não encher sua caixa de entrada: apenas conteúdo relevante do Livres.</p>
     <div class="email-input-wrap">
       <input type="email" id="email-input" class="email-input" placeholder="seu@email.com" />
       <button class="email-submit-btn" id="email-submit-btn" onclick="submitEmail()">Ver resultado →</button>
@@ -302,13 +178,12 @@
   </div>
 
 </div>
-
 <script>
-// ── Configuração Odoo ──────────────────────────────────────────────
-const ODOO_URL    = 'https://eusoulivres.odoo.com';
-const ODOO_DB     = 'eusoulivres';
-const ODOO_APIKEY = 'SUA_API_KEY_AQUI'; // substitua pela sua API Key
-// ──────────────────────────────────────────────────────────────────
+// ── Configuração Odoo ─────────────────────────────────────────────
+const ODOO_URL    = "https://eusoulivres.odoo.com";
+const ODOO_DB     = "eusoulivres";
+const ODOO_APIKEY = "SUA_API_KEY_AQUI";
+// ─────────────────────────────────────────────────────────────────
 
 const thinkerImages = {
   "mill": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABQAFADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDx8sc0h5pMc05QSQKzOgQKWOACT2xXQ2Pg3VLyESlEiU9A55/Kr2i6MZ44FRFEok+Zj1z2FetadZQraqo5KjFc1as4/CaQgnueM3fg/VLRN2EceimsOa1uLc/vYnT6ivedRSJo2TABrgNdtV8psDqDkY61NOu3oy5U9NDz/Oaaanlt2jf7px2qEjFdSZlYZmlBpcZ60jLxTFYeatWEAlmUuSFB7dTVU1ZsphFL83TqD71Mthrc7jRr1UvolbCoT+td/Z3AKFy6qoGct6V5fYES3kcuAqE5duoFd9PZLdWiKko8tcMRjIb0z7V59Z6nRTiLe6rp85ZYbhGdT/C2c1zviOaKSVYRcIuxSFU9c1b0rQWW6nlnkSZ1O8EKFAOemBx04rA1/TW/tu9VJWCu4cZGcgjOKIqN9ync5vzWVpo3OFJ6HtWdOV807eh9as6ipivZEDZGRk+9UTknJrujtc52FIxzQRk0bWwTirJH44p2FA96UKSKaRilcDY0jUPIUwsGbJBTHau80q7eayEauR6fSvLredbeZHcZUGu+sZWsfJmOFgmQFGzkEetc1em2ro2pTs7M6P8A49ImcTKpTB2v/H3P046Vy2r6mb/UJZxbeTtiwMtktj1/CuiaO0u7PML27u+S8rDJJ74rh9bdbORgsiM5GAUHGKwpq7sazfU52Zi8rsTkk5qMjilJ4pprvRysOnSlzkYpB1pDz0phckDcVBLcBTgcmq7zuwwTgegqOrUe5m5EjSs3JrW0XxBcaVIin97bBsmJuceuPSsWlHUVVkSejavf6NqdrBeaXL5E8mVuIgShzgYO3p69OtYd4+nWGmzG4k+0X8y7YYlbPlD+8x/kOtcx05qM47VCpJO5ftHaxbEysOeKfuqjmnB2XoafKLmLZY0ZwKgjlLZDcntTtxxilYdytQaDR2qyAozQKWgBCSaTFLSdqYC0UlLSAUEg5FSBsnNRU8UmNH//2Q==",
@@ -332,87 +207,142 @@ const thinkerKeys = {
   "Robert Nozick": "nozick",
 };
 
-const LETTERS = ['A','B','C'];
-
+// Perfis: A=Liberal Social, B=Liberal Conservador, C=Neoliberal, D=Minarquista
+// Cada opção tem scores para cada perfil: [A, B, C, D]
 const questions = [
   {
-    text: "Uma economia ideal seria…",
+    text: "Qual deve ser o papel principal do Estado na economia?",
     options: [
-      { text: "Um livre mercado regulado, com impostos progressivos e agências que combatam falhas de mercado e desigualdades.", type: "A" },
-      { text: "Uma economia de mercado com poucas regulações, foco em crescimento econômico e responsabilidade fiscal.", type: "B" },
-      { text: "Um laissez-faire quase absoluto, com o Estado assegurando apenas contratos e direitos de propriedade.", type: "C" }
+      { text: "Regular ativamente o mercado, corrigir falhas e redistribuir renda para reduzir desigualdades.", scores: [4,1,0,0] },
+      { text: "Garantir estabilidade institucional, livre concorrência e regras claras para o mercado funcionar.", scores: [1,4,1,0] },
+      { text: "Limitar-se a controle monetário, abertura comercial e redução do tamanho do Estado.", scores: [0,1,4,1] },
+      { text: "Restringir-se à proteção de contratos, propriedade privada e segurança: nada além disso.", scores: [0,0,1,4] }
     ]
   },
   {
-    text: "Sobre direitos sociais e programas de assistência:",
+    text: "Sobre impostos e tributação:",
     options: [
-      { text: "O Estado deve expandir programas sociais e construir um sistema robusto de bem-estar social.", type: "A" },
-      { text: "Programas sociais devem existir apenas para garantir um piso mínimo de subsistência.", type: "B" },
-      { text: "Programas sociais deveriam ser substituídos por iniciativas privadas, caridade e soluções voluntárias.", type: "C" }
+      { text: "Impostos progressivos são essenciais para financiar serviços públicos e reduzir desigualdades.", scores: [4,1,0,0] },
+      { text: "Tributação deve ser moderada e previsível, sem onerar excessivamente empresas e famílias.", scores: [1,4,1,0] },
+      { text: "Impostos devem ser baixos e flat, para estimular o crescimento econômico e a competitividade.", scores: [0,1,4,1] },
+      { text: "Tributação deveria ser mínima, limitada ao estritamente necessário para funções básicas do Estado.", scores: [0,0,1,4] }
     ]
   },
   {
-    text: "Justiça social e igualdade:",
+    text: "Como você vê os programas de bem-estar social?",
     options: [
-      { text: "O Estado deve atuar para reduzir desigualdades e garantir oportunidades mais justas.", type: "A" },
-      { text: "A igualdade perante a lei é suficiente; o mercado deve ser o principal organizador da sociedade.", type: "B" },
-      { text: "Qualquer tentativa estatal de promover igualdade interfere indevidamente na liberdade individual.", type: "C" }
+      { text: "Devem ser robustos e universais: saúde, educação e assistência social são direitos fundamentais.", scores: [4,1,0,0] },
+      { text: "Devem existir como rede de segurança, mas com foco em eficiência e sem criar dependência.", scores: [1,4,1,0] },
+      { text: "Devem ser mínimos e direcionados apenas aos mais vulneráveis, com forte controle de gastos.", scores: [0,1,4,1] },
+      { text: "Deveriam ser substituídos por soluções voluntárias, filantropia e mercado privado.", scores: [0,0,0,4] }
     ]
   },
   {
-    text: "Relações internacionais e imigração:",
+    text: "Qual é sua posição sobre liberdade de expressão?",
     options: [
-      { text: "Fronteiras mais abertas e cooperação internacional fortalecem a sociedade.", type: "A" },
-      { text: "O livre comércio é importante, mas a preservação cultural e a estabilidade nacional vêm primeiro.", type: "B" },
-      { text: "Pessoas e mercadorias devem circular livremente, sem grandes restrições impostas pelos governos.", type: "C" }
+      { text: "É fundamental, mas deve haver limites para discursos que promovam discriminação ou violência.", scores: [4,1,0,0] },
+      { text: "Deve ser ampla, com restrições apenas quando ameaçar a ordem pública e as instituições.", scores: [1,4,1,0] },
+      { text: "Deve ser bastante livre; o mercado de ideias se autorregula melhor que qualquer censura estatal.", scores: [0,1,4,1] },
+      { text: "Deve ser praticamente irrestrita: só ameaças e agressões diretas justificam qualquer limite.", scores: [0,0,1,4] }
     ]
   },
   {
-    text: "Sobre aborto:",
+    text: "Sobre política de drogas:",
     options: [
-      { text: "Deve ser legalizado e garantido como questão de autonomia individual e saúde pública.", type: "A" },
-      { text: "Deve permanecer permitido apenas nos casos previstos em lei ou em situações excepcionais.", type: "B" },
-      { text: "O Estado não deveria interferir; a decisão pertence ao indivíduo e às instituições privadas.", type: "C" }
+      { text: "Descriminalização total, com políticas públicas robustas de saúde e redução de danos.", scores: [4,0,1,1] },
+      { text: "Cautela nas reformas; mudanças abruptas podem comprometer a ordem social e a família.", scores: [0,4,0,0] },
+      { text: "Liberalização gradual, com foco em reduzir o custo do proibicionismo para a sociedade.", scores: [1,1,4,1] },
+      { text: "Legalização total: cada indivíduo é dono do próprio corpo e o Estado não tem direito de interferir.", scores: [1,0,1,4] }
     ]
   },
   {
-    text: "Política de drogas:",
+    text: "Como você avalia a imigração e as fronteiras?",
     options: [
-      { text: "A descriminalização deve vir acompanhada de políticas públicas de saúde e redução de danos.", type: "A" },
-      { text: "A liberação ampla pode comprometer a ordem social e os vínculos familiares.", type: "B" },
-      { text: "Todas as drogas deveriam ser legalizadas, pois cada indivíduo é dono do próprio corpo.", type: "C" }
+      { text: "Fronteiras mais abertas e acolhimento de imigrantes enriquecem cultural e economicamente a sociedade.", scores: [4,0,1,1] },
+      { text: "A imigração deve ser controlada para preservar a identidade cultural e a estabilidade social.", scores: [0,4,0,0] },
+      { text: "O livre fluxo de pessoas favorece a economia; burocracia migratória deve ser reduzida.", scores: [1,1,4,1] },
+      { text: "Pessoas devem poder circular livremente: fronteiras são uma forma de coerção estatal.", scores: [1,0,1,4] }
     ]
   },
   {
-    text: "Papel do Estado na vida cotidiana:",
+    text: "Qual é sua visão sobre justiça social e igualdade?",
     options: [
-      { text: "O Estado deve garantir serviços públicos universais e atuar para corrigir desigualdades sociais.", type: "A" },
-      { text: "O Estado deve ser limitado, mas necessário para manter ordem, infraestrutura e estabilidade econômica.", type: "B" },
-      { text: "O Estado deve existir apenas para polícia, tribunais e defesa nacional.", type: "C" }
+      { text: "O Estado deve atuar ativamente para reduzir desigualdades estruturais e garantir oportunidades reais.", scores: [4,1,0,0] },
+      { text: "A igualdade perante a lei é o que importa; desigualdades naturais de mérito são legítimas.", scores: [1,4,1,0] },
+      { text: "Igualdade de oportunidades deve vir da competição justa no mercado, não de intervenção estatal.", scores: [0,1,4,1] },
+      { text: "Qualquer redistribuição forçada viola direitos individuais: liberdade e propriedade vêm antes.", scores: [0,0,1,4] }
     ]
   },
   {
-    text: "Tributação:",
+    text: "Sobre regulação ambiental:",
     options: [
-      { text: "Impostos progressivos são necessários para financiar políticas públicas e reduzir desigualdades.", type: "A" },
-      { text: "Os impostos devem ser moderados e previsíveis, evitando sufocar o crescimento econômico.", type: "B" },
-      { text: "A tributação deveria ser mínima, restrita ao financiamento básico das funções essenciais do Estado.", type: "C" }
+      { text: "O Estado deve regular fortemente as emissões e financiar a transição para energia limpa.", scores: [4,1,0,0] },
+      { text: "Regulação ambiental é necessária, mas deve ser equilibrada com crescimento econômico.", scores: [1,4,1,0] },
+      { text: "Instrumentos de mercado como precificação de carbono são mais eficientes que regulação direta.", scores: [0,1,4,1] },
+      { text: "Direitos de propriedade bem definidos resolvem problemas ambientais sem necessidade de regulação.", scores: [0,0,1,4] }
     ]
   },
   {
-    text: "Liberdade de expressão:",
+    text: "Como você vê o sistema de saúde ideal?",
     options: [
-      { text: "É fundamental, mas deve haver restrições contra discursos que incentivem violência ou discriminação.", type: "A" },
-      { text: "Deve ser ampla, mas equilibrada com a preservação da ordem e das instituições.", type: "B" },
-      { text: "Deve ser praticamente irrestrita, exceto em casos de ameaça ou agressão direta.", type: "C" }
+      { text: "Universal e público, financiado por impostos: saúde é direito, não mercadoria.", scores: [4,0,0,0] },
+      { text: "Misto: sistema público como base com complementação privada, priorizando eficiência e qualidade.", scores: [1,4,1,0] },
+      { text: "Predominantemente privado e competitivo, com cobertura mínima estatal para os mais pobres.", scores: [0,1,4,1] },
+      { text: "Totalmente privado e voluntário: seguros, planos e caridade suprem quem o mercado não alcança.", scores: [0,0,0,4] }
     ]
   },
   {
-    text: "Segurança pública:",
+    text: "Qual deve ser o papel do Estado na educação?",
     options: [
-      { text: "O combate ao crime deve priorizar prevenção social, educação e redução da desigualdade.", type: "A" },
-      { text: "Depende principalmente de leis firmes, polícia eficiente e estabilidade institucional.", type: "B" },
-      { text: "O indivíduo deve ter amplo direito à autodefesa, e o poder coercitivo do Estado deve ser reduzido.", type: "C" }
+      { text: "Garantir educação pública gratuita e de qualidade em todos os níveis, como direito universal.", scores: [4,1,0,0] },
+      { text: "Oferecer educação básica pública e incentivar a concorrência com escolas privadas e vouchers.", scores: [1,4,2,0] },
+      { text: "Promover concorrência via vouchers e escolas charter, reduzindo o monopólio estatal na educação.", scores: [0,1,4,1] },
+      { text: "Deixar a educação ao mercado e famílias: o Estado não deve monopolizar a formação das crianças.", scores: [0,0,1,4] }
+    ]
+  },
+  {
+    text: "Sobre política monetária e banco central:",
+    options: [
+      { text: "O banco central deve ter mandato duplo: controlar inflação e promover emprego e crescimento.", scores: [4,1,0,0] },
+      { text: "O banco central deve ser independente e focado na estabilidade de preços e do sistema financeiro.", scores: [1,4,1,0] },
+      { text: "Regras monetárias rígidas e previsíveis são melhores do que discricionariedade dos banqueiros centrais.", scores: [0,1,4,1] },
+      { text: "O banco central é uma instituição coercitiva; moeda competitiva e padrão-ouro são alternativas legítimas.", scores: [0,0,1,4] }
+    ]
+  },
+  {
+    text: "Como você vê o livre comércio internacional?",
+    options: [
+      { text: "É positivo, mas deve ser acompanhado de proteções sociais para quem é prejudicado.", scores: [4,1,0,0] },
+      { text: "É importante, mas certos setores estratégicos merecem proteção por razões de segurança nacional.", scores: [1,4,1,0] },
+      { text: "Livre comércio deve ser a regra; tarifas e protecionismo geram ineficiência e pobreza.", scores: [0,1,4,1] },
+      { text: "Comércio entre indivíduos não deve ter nenhuma barreira imposta por governos.", scores: [0,0,1,4] }
+    ]
+  },
+  {
+    text: "Sobre direitos civis e comportamento individual:",
+    options: [
+      { text: "O Estado deve garantir e expandir direitos civis, combatendo discriminação de forma ativa.", scores: [4,0,1,1] },
+      { text: "Direitos civis são importantes, mas mudanças muito rápidas nos costumes podem desestabilizar a sociedade.", scores: [0,4,0,0] },
+      { text: "Cada pessoa deve ter liberdade plena sobre sua vida privada, sem interferência do Estado ou da maioria.", scores: [1,1,4,2] },
+      { text: "Liberdade individual é absoluta: nenhuma maioria tem o direito de ditar como o indivíduo deve viver.", scores: [1,0,1,4] }
+    ]
+  },
+  {
+    text: "Qual é a sua visão sobre segurança pública?",
+    options: [
+      { text: "Combater as raízes sociais do crime: desigualdade, exclusão e falta de oportunidades.", scores: [4,0,0,0] },
+      { text: "Equilíbrio entre prevenção social, policiamento eficiente e respeito às instituições democráticas.", scores: [1,4,1,0] },
+      { text: "Eficiência policial e leis claras são centrais; o mercado privado de segurança pode complementar.", scores: [0,1,4,1] },
+      { text: "O indivíduo tem amplo direito à autodefesa; o monopólio estatal da força deve ser questionado.", scores: [0,0,1,4] }
+    ]
+  },
+  {
+    text: "O que mais define uma sociedade verdadeiramente livre?",
+    options: [
+      { text: "Igualdade de oportunidades reais, dignidade para todos e proteção dos mais vulneráveis.", scores: [4,0,0,0] },
+      { text: "Instituições sólidas, Estado de direito, democracia representativa e responsabilidade fiscal.", scores: [1,4,1,0] },
+      { text: "Mercados livres, preços competitivos, estabilidade monetária e mínima burocracia.", scores: [0,1,4,1] },
+      { text: "Soberania individual plena, propriedade privada inviolável e Estado que não interfere na vida pessoal.", scores: [0,0,0,4] }
     ]
   }
 ];
@@ -421,7 +351,7 @@ const results = {
   A: {
     title: "Liberal Social",
     subtitle: "Progressista / Cosmopolita",
-    desc: "Você tende a defender economia de mercado com regulação, um Estado de bem-estar social robusto e ampliação de direitos civis. Acredita na cooperação internacional, no multiculturalismo e que reduzir desigualdades é um objetivo político legítimo — sem abrir mão da liberdade individual como valor central.",
+    desc: "Você defende economia de mercado com regulação ativa, um Estado de bem-estar social robusto e ampliação de direitos civis. Acredita que reduzir desigualdades é um objetivo político legítimo e que liberdade sem condições materiais mínimas é apenas formal.",
     tags: ["Economia regulada", "Bem-estar social", "Direitos civis amplos", "Cooperação internacional", "Redução de desigualdades"],
     thinkers: [
       { name: "John Stuart Mill", desc: "Defensor da liberdade individual e da autonomia como princípio central da vida pública." },
@@ -430,20 +360,30 @@ const results = {
     ]
   },
   B: {
-    title: "Neoliberal",
-    subtitle: "",
-    desc: "Você tende a defender economia de mercado com Estado limitado, responsabilidade fiscal e estabilidade institucional. Valoriza tradições e prefere prudência nas mudanças sociais, combinando livre comércio com preservação cultural e menor intervenção estatal na economia.",
-    tags: ["Estado limitado", "Responsabilidade fiscal", "Livre comércio", "Estabilidade institucional", "Prudência nas reformas"],
+    title: "Liberal Conservador",
+    subtitle: "Ordem e Liberdade",
+    desc: "Você valoriza a liberdade dentro de instituições sólidas e tradições testadas pelo tempo. Defende Estado de direito, democracia representativa, responsabilidade fiscal e livre mercado: com prudência nas reformas e atenção à estabilidade social.",
+    tags: ["Estado de direito", "Responsabilidade fiscal", "Livre mercado", "Democracia representativa", "Prudência nas reformas"],
     thinkers: [
       { name: "Friedrich Hayek", desc: "Crítico do planejamento central, defendeu a ordem espontânea do mercado e os limites do conhecimento estatal." },
       { name: "Milton Friedman", desc: "Economista da Escola de Chicago, advogou por liberdade econômica, controle monetário e mínima intervenção do Estado." }
     ]
   },
   C: {
+    title: "Neoliberal",
+    subtitle: "",
+    desc: "Você prioriza mercados competitivos, abertura econômica, controle fiscal rígido e redução do tamanho do Estado. Acredita que a eficiência do mercado supera a intervenção estatal na maioria dos domínios e que o crescimento econômico é o melhor caminho para o bem-estar.",
+    tags: ["Mercados competitivos", "Abertura econômica", "Controle fiscal", "Privatizações", "Eficiência de mercado"],
+    thinkers: [
+      { name: "Milton Friedman", desc: "Pai do monetarismo moderno, defensor de mercados livres, escola de vouchers e regras monetárias claras." },
+      { name: "Friedrich Hayek", desc: "Argumentou que o sistema de preços carrega mais informação do que qualquer planejador central poderia processar." }
+    ]
+  },
+  D: {
     title: "Minarquista",
     subtitle: "Libertário",
-    desc: "Você tende a defender o Estado mínimo, com forte proteção à propriedade privada e à liberdade individual. Acredita em livre mercado quase irrestrito, amplas liberdades civis e redução drástica da interferência estatal tanto na vida econômica quanto na pessoal.",
-    tags: ["Estado mínimo", "Propriedade privada", "Livre mercado", "Liberdades civis", "Autonomia individual"],
+    desc: "Você defende o Estado mínimo, limitado à proteção de contratos, propriedade privada e segurança individual. Acredita que qualquer expansão além dessas funções representa uma violação da liberdade individual: e que o mercado e a cooperação voluntária resolvem o que o Estado pretende resolver pela coerção.",
+    tags: ["Estado mínimo", "Propriedade privada", "Livre mercado irrestrito", "Liberdades civis", "Voluntarismo"],
     thinkers: [
       { name: "Robert Nozick", desc: "Defendeu o Estado mínimo como único compatível com os direitos individuais, em contraponto a Rawls." },
       { name: "Ludwig von Mises", desc: "Pilar da Escola Austríaca, argumentou pela impossibilidade do cálculo econômico racional sob o socialismo." },
@@ -452,43 +392,45 @@ const results = {
   }
 };
 
-const scoreLabels = { A: "Liberal Social", B: "Neoliberal", C: "Minarquista" };
+const scoreLabels = { A: "Liberal Social", B: "Liberal Conservador", C: "Neoliberal", D: "Minarquista" };
 
-// Embaralhar perguntas e opções de cada pergunta
+// Embaralhar perguntas e opções
 questions.sort(() => Math.random() - 0.5);
 questions.forEach(q => q.options.sort(() => Math.random() - 0.5));
 
+const LETTERS = ["A","B","C","D"];
 let current = 0;
-let scores = { A: 0, B: 0, C: 0 };
+let scores = { A: 0, B: 0, C: 0, D: 0 };
 let winnerKey = null;
 
 function loadQuestion() {
   const q = questions[current];
   const total = questions.length;
-
-  document.getElementById('question-number').textContent = `Pergunta ${current + 1}`;
-  document.getElementById('question-text').textContent = q.text;
-  document.getElementById('progress-label').textContent = `Pergunta ${current + 1} de ${total}`;
+  document.getElementById("question-number").textContent = "Pergunta " + (current + 1);
+  document.getElementById("question-text").textContent = q.text;
+  document.getElementById("progress-label").textContent = "Pergunta " + (current + 1) + " de " + total;
   const pct = Math.round((current / total) * 100);
-  document.getElementById('progress-pct').textContent = pct + '%';
-  document.getElementById('progress').style.width = pct + '%';
-
-  const container = document.getElementById('options-container');
-  container.innerHTML = '';
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span><span>${opt.text}</span>`;
-    btn.onclick = () => selectOption(btn, opt.type);
+  document.getElementById("progress-pct").textContent = pct + "%";
+  document.getElementById("progress").style.width = pct + "%";
+  const container = document.getElementById("options-container");
+  container.innerHTML = "";
+  q.options.forEach(function(opt, i) {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.innerHTML = "<span class=\"option-letter\">" + LETTERS[i] + "</span><span>" + opt.text + "</span>";
+    btn.onclick = function() { selectOption(btn, opt.scores); };
     container.appendChild(btn);
   });
 }
 
-function selectOption(btn, type) {
-  document.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
-  btn.classList.add('selected');
-  scores[type]++;
-  setTimeout(() => {
+function selectOption(btn, optScores) {
+  document.querySelectorAll(".option-btn").forEach(function(b) { b.style.pointerEvents = "none"; });
+  btn.classList.add("selected");
+  scores.A += optScores[0];
+  scores.B += optScores[1];
+  scores.C += optScores[2];
+  scores.D += optScores[3];
+  setTimeout(function() {
     current++;
     if (current < questions.length) loadQuestion();
     else showEmailGate();
@@ -496,151 +438,111 @@ function selectOption(btn, type) {
 }
 
 function showEmailGate() {
-  document.getElementById('progress').style.width = '100%';
-  document.getElementById('progress-pct').textContent = '100%';
-  document.getElementById('quiz-ui').style.display = 'none';
-  document.getElementById('email-gate').style.display = 'block';
-
-  // calcular vencedor já
-  winnerKey = Object.keys(scores).reduce((a, b) => scores[a] >= scores[b] ? a : b);
-
-  // permitir envio com Enter
-  document.getElementById('email-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') submitEmail();
+  document.getElementById("progress").style.width = "100%";
+  document.getElementById("progress-pct").textContent = "100%";
+  document.getElementById("quiz-ui").style.display = "none";
+  document.getElementById("email-gate").style.display = "block";
+  winnerKey = Object.keys(scores).reduce(function(a, b) { return scores[a] >= scores[b] ? a : b; });
+  document.getElementById("email-input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") submitEmail();
   });
 }
 
 async function sendToOdoo(email) {
-  // Autenticar e obter uid
-  const authResp = await fetch(`${ODOO_URL}/web/session/authenticate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0', method: 'call', id: 1,
-      params: { db: ODOO_DB, login: 'api', password: ODOO_APIKEY }
-    })
+  const authResp = await fetch(ODOO_URL + "/web/session/authenticate", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", method: "call", id: 1, params: { db: ODOO_DB, login: "api", password: ODOO_APIKEY } })
   });
   const authData = await authResp.json();
-  const uid = authData?.result?.uid;
-  if (!uid) throw new Error('Autenticação falhou');
-
-  // Criar contato
-  const createResp = await fetch(`${ODOO_URL}/web/dataset/call_kw`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0', method: 'call', id: 2,
-      params: {
-        model: 'res.partner',
-        method: 'create',
-        args: [{ name: email, email: email }],
-        kwargs: {}
-      }
-    })
+  const uid = authData && authData.result && authData.result.uid;
+  if (!uid) throw new Error("Auth failed");
+  const createResp = await fetch(ODOO_URL + "/web/dataset/call_kw", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", method: "call", id: 2, params: { model: "res.partner", method: "create", args: [{ name: email, email: email }], kwargs: {} } })
   });
   const createData = await createResp.json();
-  if (createData.error) throw new Error(createData.error.data?.message || 'Erro ao salvar');
+  if (createData.error) throw new Error("Erro ao salvar");
   return createData.result;
 }
 
 async function submitEmail() {
-  const input = document.getElementById('email-input');
-  const errEl = document.getElementById('email-error');
-  const statusEl = document.getElementById('email-status');
-  const btn = document.getElementById('email-submit-btn');
+  const input = document.getElementById("email-input");
+  const errEl = document.getElementById("email-error");
+  const statusEl = document.getElementById("email-status");
+  const btn = document.getElementById("email-submit-btn");
   const email = input.value.trim();
-
-  // Validação básica
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (!valid) {
-    input.classList.add('error');
-    errEl.style.display = 'block';
-    return;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    input.classList.add("error"); errEl.style.display = "block"; return;
   }
-  input.classList.remove('error');
-  errEl.style.display = 'none';
-
-  btn.disabled = true;
-  btn.textContent = 'Enviando…';
-  statusEl.textContent = '';
-  statusEl.className = 'email-status';
-
+  input.classList.remove("error"); errEl.style.display = "none";
+  btn.disabled = true; btn.textContent = "Enviando…"; statusEl.textContent = ""; statusEl.className = "email-status";
   try {
     await sendToOdoo(email);
-    statusEl.textContent = '✓ E-mail registrado com sucesso!';
-    statusEl.className = 'email-status success';
-    setTimeout(() => showResult(), 900);
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = 'Não foi possível registrar o e-mail agora. Mostrando seu resultado mesmo assim.';
-    statusEl.className = 'email-status fail';
-    setTimeout(() => showResult(), 1800);
+    statusEl.textContent = "✓ E-mail registrado com sucesso!";
+    statusEl.className = "email-status success";
+    setTimeout(function() { showResult(); }, 900);
+  } catch(err) {
+    statusEl.textContent = "Não foi possível registrar agora. Mostrando seu resultado mesmo assim.";
+    statusEl.className = "email-status fail";
+    setTimeout(function() { showResult(); }, 1800);
   }
 }
 
-function skipEmail() {
-  showResult();
-}
+function skipEmail() { showResult(); }
 
 function showResult() {
-  document.getElementById('email-gate').style.display = 'none';
+  document.getElementById("email-gate").style.display = "none";
   const r = results[winnerKey];
+  document.getElementById("result-text").textContent = r.title;
+  document.getElementById("result-subtitle").textContent = r.subtitle;
+  document.getElementById("result-desc").textContent = r.desc;
 
-  document.getElementById('result-text').textContent = r.title;
-  document.getElementById('result-subtitle').textContent = r.subtitle;
-  document.getElementById('result-desc').textContent = r.desc;
-
-  const tagsEl = document.getElementById('result-tags');
-  r.tags.forEach(t => {
-    const span = document.createElement('span');
-    span.className = 'tag';
-    span.textContent = t;
-    tagsEl.appendChild(span);
+  const tagsEl = document.getElementById("result-tags");
+  r.tags.forEach(function(t) {
+    const span = document.createElement("span");
+    span.className = "tag"; span.textContent = t; tagsEl.appendChild(span);
   });
 
-  // Pensadores
-  const thinkersEl = document.getElementById('thinkers-list');
-  r.thinkers.forEach(t => {
-    const card = document.createElement('div');
-    card.className = 'thinker-card';
-    const avatarEl = document.createElement('div');
-    avatarEl.className = 'thinker-avatar';
+  const thinkersEl = document.getElementById("thinkers-list");
+  r.thinkers.forEach(function(t) {
+    const card = document.createElement("div");
+    card.className = "thinker-card";
+    const avatarEl = document.createElement("div");
+    avatarEl.className = "thinker-avatar";
     const imgKey = thinkerKeys[t.name];
     if (imgKey && thinkerImages[imgKey]) {
-      avatarEl.style.cssText = 'background:none;overflow:hidden;padding:0;';
-      const imgEl = document.createElement('img');
+      avatarEl.style.cssText = "background:none;overflow:hidden;padding:0;";
+      const imgEl = document.createElement("img");
       imgEl.src = thinkerImages[imgKey];
-      imgEl.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+      imgEl.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:50%;";
       avatarEl.appendChild(imgEl);
     } else {
       avatarEl.textContent = t.name.charAt(0);
     }
-    const infoEl = document.createElement('div');
-    infoEl.innerHTML = '<div class="thinker-name">' + t.name + '</div><div class="thinker-desc">' + t.desc + '</div>';
-    card.appendChild(avatarEl);
-    card.appendChild(infoEl);
+    const infoEl = document.createElement("div");
+    infoEl.innerHTML = "<div class=\"thinker-name\">" + t.name + "</div><div class=\"thinker-desc\">" + t.desc + "</div>";
+    card.appendChild(avatarEl); card.appendChild(infoEl);
     thinkersEl.appendChild(card);
   });
 
-  const barsEl = document.getElementById('score-bars');
-  const maxVal = Math.max(...Object.values(scores), 1);
-  Object.entries(scores).forEach(([k, v]) => {
-    const row = document.createElement('div');
-    row.className = 'score-row';
-    row.innerHTML = `
-      <span class="score-label">${scoreLabels[k]}</span>
-      <div class="score-track"><div class="score-fill" style="width:0%" data-pct="${Math.round((v / maxVal) * 100)}"></div></div>
-      <span class="score-val">${v}</span>
-    `;
+  const barsEl = document.getElementById("score-bars");
+  const maxVal = Math.max.apply(null, Object.values(scores));
+  Object.entries(scoreLabels).forEach(function(entry) {
+    const k = entry[0]; const label = entry[1];
+    const v = scores[k];
+    const row = document.createElement("div");
+    row.className = "score-row";
+    row.innerHTML = "<span class=\"score-label\">" + label + "</span>" +
+      "<div class=\"score-track\"><div class=\"score-fill\" style=\"width:0%\" data-pct=\"" + Math.round((v/maxVal)*100) + "\"></div></div>" +
+      "<span class=\"score-val\">" + v + "</span>";
     barsEl.appendChild(row);
   });
 
-  document.getElementById('result').style.display = 'block';
-
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      document.querySelectorAll('.score-fill').forEach(el => {
-        el.style.width = el.dataset.pct + '%';
+  document.getElementById("result").style.display = "block";
+  requestAnimationFrame(function() {
+    setTimeout(function() {
+      document.querySelectorAll(".score-fill").forEach(function(el) {
+        el.style.width = el.dataset.pct + "%";
       });
     }, 80);
   });
@@ -648,6 +550,5 @@ function showResult() {
 
 loadQuestion();
 </script>
-
 </body>
 </html>
